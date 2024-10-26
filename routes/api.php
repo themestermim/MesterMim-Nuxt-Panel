@@ -11,7 +11,3 @@ Route::group(['middleware' => ['auth:api']], function () {
 Route::group(['middleware' => ['guest:api']], function () {
     Route::post('/register', [RegisterController::class,'register']);
 });
-
-Route::get('/', function () {
-    return response()->json(['msg' => "hi"]);
-});
