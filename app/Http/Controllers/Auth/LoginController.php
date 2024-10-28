@@ -56,7 +56,7 @@ class LoginController extends Controller
             200,
             [
                 'token'      => $this->token,
-                'exp_date' => $exp,
+                'exp_date'   => $exp,
                 'token_type' => 'JWT',
             ]
         );
