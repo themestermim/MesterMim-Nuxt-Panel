@@ -20,6 +20,6 @@ Route::group(['middleware' => ['guest:api']], function () {
     Route::post('/verification/verify/{user}', [VerificationController::class,'verify'])->name('verification.verify');
     Route::post('/verification/resend', [VerificationController::class,'resend']);
     Route::post('/login', [LoginController::class,'login']);
-    Route::post('/password/resend', [ForgotPasswordController::class,'resend']);
+    Route::post('/password/resend', [ForgotPasswordController::class,'sendResetLinkEmail']);
     Route::post('/password/reset', [ResetPasswordController::class,'reset']);
 });
