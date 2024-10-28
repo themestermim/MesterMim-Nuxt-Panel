@@ -13,16 +13,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
 
     use AuthenticatesUsers;
 
@@ -48,7 +38,7 @@ class LoginController extends Controller
     protected function sendLoginResponse(Request $request)
     {
         $this->clearLoginAttempts($request);
-        $token = (string)$this->guard()->getToken();
+//        $token = (string)$this->guard()->getToken();
         $exp = $this->guard()->getPayload()->get('exp');
 
         $response = ResponseHelper::formatResponse(
@@ -80,7 +70,7 @@ class LoginController extends Controller
         }
 
         throw ValidationException::withMessages([
-            $this->username() => 'Invalid Credentials',
+            $this->username() => 'User not found.',
         ]);
     }
 
@@ -107,18 +97,5 @@ class LoginController extends Controller
 
         return new JsonResponse($response, 200);
     }
-//    public function logout (Request $request) {
-//        $this->guard()->logout();
-//        $this->guard()->invalidate();
-//
-//        $response = ResponseHelper::formatResponse(
-//            true,
-//            200,
-//            [
-//                'message' => 'Logged out successfully',
-//            ]
-//        );
-//        return new JsonResponse($response, 200);
-//    }
 
 }
