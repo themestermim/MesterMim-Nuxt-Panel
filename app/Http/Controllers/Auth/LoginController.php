@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LoginController extends Controller
 {
@@ -73,11 +74,49 @@ class LoginController extends Controller
                     'message' => 'You need to verify your email',
                 ]
             );
+            return new JsonResponse($response, 422);
         }
 
         throw ValidationException::withMessages([
             $this->username() => 'Invalid Credentials',
         ]);
     }
+
+    public function logout(Request $request) {
+        // باطل کردن توکن ارسالی از سمت کاربر
+        try {
+            JWTAuth::invalidate(JWTAuth::getToken());
+            $response = ResponseHelper::formatResponse(
+                true,
+                200,
+                [
+                    'message' => 'Logged out successfully',
+                ]
+            );
+        } catch (\Exception $e) {
+            $response = ResponseHelper::formatResponse(
+                false,
+                500,
+                [
+                    'message' => 'Failed to logout, please try again',
+                ]
+            );
+        }
+
+        return new JsonResponse($response, 200);
+    }
+//    public function logout (Request $request) {
+//        $this->guard()->logout();
+//        $this->guard()->invalidate();
+//
+//        $response = ResponseHelper::formatResponse(
+//            true,
+//            200,
+//            [
+//                'message' => 'Logged out successfully',
+//            ]
+//        );
+//        return new JsonResponse($response, 200);
+//    }
 
 }

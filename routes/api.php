@@ -7,7 +7,7 @@ use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\LoginController;
 
 Route::group(['middleware' => ['auth:api']], function () {
-
+    Route::post('/logout', [LoginController::class,'logout']);
 });
 
 Route::group(['middleware' => ['guest:api']], function () {
