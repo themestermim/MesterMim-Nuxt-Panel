@@ -18,4 +18,17 @@ class ResponseHelper
 
         return $response;
     }
+
+    public static function unAuthorize()
+    {
+        $response = [
+            'success' => false,
+            'status' => 401,
+            'data' => [
+                'message' => 'Unauthorized.'
+            ],
+        ];
+
+        return $response;
+    }
 }

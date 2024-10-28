@@ -48,13 +48,15 @@ class LoginController extends Controller
     protected function sendLoginResponse(Request $request)
     {
         $this->clearLoginAttempts($request);
-        $token = $this->guard()->getToken();
+        $token = (string)$this->guard()->getToken();
+        $exp = $this->guard()->getPayload()->get('exp');
 
         $response = ResponseHelper::formatResponse(
             true,
             200,
             [
                 'token'      => $this->token,
+                'exp_date' => $exp,
                 'token_type' => 'JWT',
             ]
         );
