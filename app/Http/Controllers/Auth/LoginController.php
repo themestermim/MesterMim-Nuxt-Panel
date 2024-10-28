@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -20,21 +25,59 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+    protected $token;
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    protected function attemptLogin(Request $request)
     {
-        $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
+        $this->token = $this->guard()->attempt($this->credentials($request));
+
+        if(! $this->token) {
+            return false;
+        }
+
+        $user = $this->guard()->user();
+        if($user instanceof MustVerifyEmail && !$user->hasVerifiedEmail()) {
+            return false;
+        }
+
+        $this->guard()->setToken($this->token);
+        return true;
     }
+
+    protected function sendLoginResponse(Request $request)
+    {
+        $this->clearLoginAttempts($request);
+        $token = $this->guard()->getToken();
+
+        $response = ResponseHelper::formatResponse(
+            true,
+            200,
+            [
+                'token'      => $this->token,
+                'token_type' => 'JWT',
+            ]
+        );
+
+        return new JsonResponse($response, 200);
+
+    }
+
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        $user = $this->guard()->user();
+        if($user instanceof MustVerifyEmail && !$user->hasVerifiedEmail()) {
+            $response = ResponseHelper::formatResponse(
+                false,
+                422,
+                [
+                    'message' => 'You need to verify your email',
+                ]
+            );
+        }
+
+        throw ValidationException::withMessages([
+            $this->username() => 'Invalid Credentials',
+        ]);
+    }
+
 }
