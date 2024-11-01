@@ -13,8 +13,6 @@ class UserResource extends JsonResource
             "id" => $this->id,
             "fullName" => $this->name,
             "image" => $this->image,
-//            "description" => $this->short_description,
         ];
-//        return parent::toArray($request);
     }
 }
