@@ -9,10 +9,10 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\User\InfoController;
 
-Route::get('/profile', [InfoController::class,'info']);
 
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/logout', [LoginController::class,'logout']);
+    Route::get('/profile/info', [InfoController::class,'info']);
 });
 
 Route::group(['middleware' => ['guest:api']], function () {
