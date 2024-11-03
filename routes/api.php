@@ -14,7 +14,7 @@ use App\Http\Controllers\User\EditController;
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/logout', [LoginController::class,'logout']);
     Route::get('/profile/info', [InfoController::class,'info']);
-    Route::put('/profile/edit', [EditController::class,'edit']);
+    Route::post('/profile/edit', [EditController::class,'edit']);
 });
 
 Route::group(['middleware' => ['guest:api']], function () {

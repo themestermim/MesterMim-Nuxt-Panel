@@ -6,11 +6,14 @@ use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserDescriptions;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class EditController extends Controller
 {
     public function edit(Request $request) {
+
+//        return response()->json($request->all());
 
         if (!auth()->check()) {
             return response()->json(ResponseHelper::unAuthorize(), 401);
@@ -41,6 +44,9 @@ class EditController extends Controller
         }
 
         if ($request->hasFile('image')) {
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image); // حذف عکس قبلی از storage
+            }
             $imagePath = $request->file('image')->store('images', 'public');
             $user->image = $imagePath;
         }
