@@ -6,6 +6,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Models\UserDescriptions;
 use Illuminate\Http\Request;
 
 class InfoController extends Controller
@@ -14,25 +15,25 @@ class InfoController extends Controller
 
         $headers = $request->headers->all();
 
-        if($request->header("lang") == "fa"){
-            return response()->json([
-                'headers' => $headers
-            ]);
-        }
-
         if (!$request->hasHeader('Authorization')) {
             return ResponseHelper::formatResponse(false, 400, ["msg" => "Token not provided"]);
         }
 
-        if (User::count() == 0) {
-            return ResponseHelper::formatResponse(false, 404, ["msg" => "User not found"]);
-        }
+        switch ($request->header('lang')) {
+            case 'fa':
+            case 'en':
+                    if(auth()->check() && auth()->user() && User::count() > 0) {
+                        $description = UserDescriptions::where('user_id', auth()->id())
+                            ->where('lang', $request->header('lang'))
+                            ->first();
 
-        if(auth()->check() && auth()->user() && User::count() > 0) {
-            return ResponseHelper::formatResponse(true, 200, new UserResource(auth()->user()));
-        }
+                        return ResponseHelper::formatResponse(true, 200, new UserResource(auth()->user(), $description));
+                    }
+                    return ResponseHelper::unAuthorize();
+                break;
 
-        return ResponseHelper::unAuthorize();
-//        return ResponseHelper::unAuthorize();
+            default:
+                return ResponseHelper::langUnsupport();
+        }
     }
 }

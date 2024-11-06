@@ -59,13 +59,13 @@ class EditController extends Controller
         // ذخیره توضیحات فارسی
         UserDescriptions::updateOrCreate(
             ['user_id' => $user->id, 'lang' => 'fa'],
-            ['short_description' => substr($request->fa_description, 0, 100)]
+            ['short_description' => $request->fa_description]
         );
 
         // ذخیره توضیحات انگلیسی
         UserDescriptions::updateOrCreate(
             ['user_id' => $user->id, 'lang' => 'en'],
-            ['short_description' => substr($request->en_description, 0, 100)]
+            ['short_description' => $request->en_description]
         );
 
         return response()->json(ResponseHelper::formatResponse(true, 200, ['message' => 'your profile changed']), 200, [], JSON_UNESCAPED_UNICODE);

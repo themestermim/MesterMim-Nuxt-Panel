@@ -31,4 +31,17 @@ class ResponseHelper
 
         return $response;
     }
+
+    public static function langUnsupport()
+    {
+        $response = [
+            'success' => false,
+            'status' => 444,
+            'data' => [
+                'message' => 'Language not supported.'
+            ],
+        ];
+
+        return $response;
+    }
 }
