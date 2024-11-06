@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\UserDescriptions;
 use Illuminate\Support\Facades\Storage;
@@ -12,8 +13,6 @@ use Illuminate\Support\Facades\Validator;
 class EditController extends Controller
 {
     public function edit(Request $request) {
-
-//        return response()->json($request->all());
 
         if (!auth()->check()) {
             return response()->json(ResponseHelper::unAuthorize(), 401);
@@ -25,13 +24,6 @@ class EditController extends Controller
             return response()->json(ResponseHelper::unAuthorize(), 401);
         }
 
-//        $this->validate($request, [
-//            'name' => ['required'],
-//            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp'],
-//            'fa_description' => ['required', 'string', 'min:20'],
-//            'en_description' => ['required', 'string', 'min:20'],
-//        ]);
-
         $validator = Validator::make($request->all(), [
             'name' => ['required'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp'],
@@ -40,7 +32,7 @@ class EditController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(ResponseHelper::formatResponse(false, 422, $validator->errors()), 422);
+            return response()->json($validator->errors(), 422);
         }
 
         if ($request->hasFile('image')) {
@@ -53,21 +45,33 @@ class EditController extends Controller
 
         $user->update([
             'name' => $request->name,
-            'image' => $user->image, // استفاده از مقدار به‌روز شده‌ی $user->image
+            'image' => $user->image,
         ]);
 
-        // ذخیره توضیحات فارسی
         UserDescriptions::updateOrCreate(
             ['user_id' => $user->id, 'lang' => 'fa'],
             ['short_description' => $request->fa_description]
         );
 
-        // ذخیره توضیحات انگلیسی
         UserDescriptions::updateOrCreate(
             ['user_id' => $user->id, 'lang' => 'en'],
             ['short_description' => $request->en_description]
         );
 
-        return response()->json(ResponseHelper::formatResponse(true, 200, ['message' => 'your profile changed']), 200, [], JSON_UNESCAPED_UNICODE);
+        $lang = $request->header('lang');
+
+//        dd($lang);
+        switch ($request->header('lang')) {
+            case 'fa':
+            case 'en':
+                $description = UserDescriptions::where('user_id', auth()->id())
+                    ->where('lang', $request->header('lang'))
+                    ->first();
+
+                return ResponseHelper::formatResponse(true, 200, new UserResource(auth()->user(), $description));
+
+            default:
+                return response()->json(ResponseHelper::langUnsupport(), 444);
+        }
     }
 }

@@ -13,8 +13,6 @@ class InfoController extends Controller
 {
     public function info(Request $request) {
 
-        $headers = $request->headers->all();
-
         if (!$request->hasHeader('Authorization')) {
             return ResponseHelper::formatResponse(false, 400, ["msg" => "Token not provided"]);
         }
