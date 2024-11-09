@@ -17,6 +17,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::get('/profile/info', [InfoController::class,'info']);
     Route::post('/profile/edit', [EditController::class,'edit']);
     Route::post('/experiences/edit', [ExperiencesController::class,'edit']);
+    Route::delete('/experiences/{id}', [ExperiencesController::class,'delete']);
 });
 
 Route::group(['middleware' => ['guest:api']], function () {

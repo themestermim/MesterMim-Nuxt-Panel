@@ -33,11 +33,6 @@ class ExperiencesController extends Controller
         }
 
         return response()->json(ResponseHelper::formatResponse(true, 200, $formattedExperiences), 200);
-
-//        return response()->json([
-//            'status' => 'success',
-//            'experiences' => $formattedExperiences,
-//        ], 200);
     }
 
 
@@ -46,8 +41,6 @@ class ExperiencesController extends Controller
         if (!auth()->check()) {
             return response()->json(ResponseHelper::unAuthorize(), 401);
         }
-
-//        return response()->json($request->all(), 200);
 
         $validator = Validator::make($request->all(), [
             'experiences' => ['required', 'array'],
@@ -61,10 +54,7 @@ class ExperiencesController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'validation_error',
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(ResponseHelper::response422($validator->errors()), 422);
         }
 
         $validated = $validator->validated();
@@ -110,4 +100,32 @@ class ExperiencesController extends Controller
             'message' => 'Experiences updated successfully.'
         ], 200);
     }
+
+    public function delete($id)
+    {
+        dd($id);
+        $experience = Experience::find($id);
+
+
+        if (!$experience) {
+            return response()->json(ResponseHelper::response422(['message' => 'Experience not found.']), 404);
+        }
+
+        $typeId = $experience->type_id;
+
+        $experiences = Experience::where('type_id', $typeId)->get();
+
+        foreach ($experiences as $exp) {
+            if ($exp->image) {
+                $imagePath = public_path('storage/' . $exp->image);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+            $exp->delete();
+        }
+
+        return response()->json(ResponseHelper::formatResponse(true, 200, ['message' => 'success']), 200);
+    }
+
 }
