@@ -58,7 +58,7 @@ class EditController extends Controller
             ['short_description' => $request->en_description]
         );
 
-        $lang = $request->header('lang');
+//        $lang = $request->header('lang');
 
 //        dd($lang);
         switch ($request->header('lang')) {
