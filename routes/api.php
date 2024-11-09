@@ -26,4 +26,5 @@ Route::group(['middleware' => ['guest:api']], function () {
     Route::post('/login', [LoginController::class,'login']);
     Route::post('/password/resend', [ForgotPasswordController::class,'sendResetLinkEmail']);
     Route::post('/password/reset', [ResetPasswordController::class,'reset']);
+    Route::get('/experiences', [ExperiencesController::class,'index']);
 });

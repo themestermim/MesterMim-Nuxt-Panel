@@ -40,4 +40,15 @@ class ResponseHelper
 
         return $response;
     }
+
+    public static function response422($data)
+    {
+        $response = [
+            'success' => false,
+            'status' => 422,
+            'data' => $data,
+        ];
+
+        return $response;
+    }
 }

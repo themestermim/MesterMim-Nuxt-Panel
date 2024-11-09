@@ -18,4 +18,9 @@ class Experience extends Model
         'image',
         'lang',
     ];
+
+    public function getImageAttribute($value)
+    {
+        return $value ? config('app.url') . '/storage/' . $value : null;
+    }
 }
