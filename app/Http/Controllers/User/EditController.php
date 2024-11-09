@@ -27,8 +27,10 @@ class EditController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => ['required'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp'],
-            'fa_description' => ['required', 'string', 'min:20'],
-            'en_description' => ['required', 'string', 'min:20'],
+            'fa_short_desc' => ['required', 'string', 'min:20'],
+            'en_short_desc' => ['required', 'string', 'min:20'],
+            'fa_long_desc' => ['required', 'string', 'min:20'],
+            'en_long_desc' => ['required', 'string', 'min:20'],
         ]);
 
         if ($validator->fails()) {
@@ -37,7 +39,7 @@ class EditController extends Controller
 
         if ($request->hasFile('image')) {
             if ($user->image) {
-                Storage::disk('public')->delete($user->image); // حذف عکس قبلی از storage
+                Storage::disk('public')->delete($user->image);
             }
             $imagePath = $request->file('image')->store('images', 'public');
             $user->image = $imagePath;
@@ -50,12 +52,18 @@ class EditController extends Controller
 
         UserDescriptions::updateOrCreate(
             ['user_id' => $user->id, 'lang' => 'fa'],
-            ['short_description' => $request->fa_description]
+            [
+                'short_description' => $request->fa_short_desc,
+                'long_description' => $request->fa_long_desc,
+            ]
         );
 
         UserDescriptions::updateOrCreate(
             ['user_id' => $user->id, 'lang' => 'en'],
-            ['short_description' => $request->en_description]
+            [
+                'short_description' => $request->en_short_desc,
+                'long_description' => $request->en_long_desc,
+            ]
         );
 
 //        $lang = $request->header('lang');

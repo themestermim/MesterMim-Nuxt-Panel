@@ -14,18 +14,17 @@ class InfoController extends Controller
     public function info(Request $request) {
 
         if (!$request->hasHeader('Authorization')) {
-            return ResponseHelper::formatResponse(false, 400, ["msg" => "Token not provided"]);
+            return ResponseHelper::unAuthorize();
         }
 
+//        auth()->check() &&
         switch ($request->header('lang')) {
             case 'fa':
             case 'en':
-                    if(auth()->check() && auth()->user() && User::count() > 0) {
-                        $description = UserDescriptions::where('user_id', auth()->id())
-                            ->where('lang', $request->header('lang'))
-                            ->first();
+                    if(auth()->user() && User::count() > 0) {
+                        $descriptions = UserDescriptions::where('user_id', auth()->id())->get();
 
-                        return ResponseHelper::formatResponse(true, 200, new UserResource(auth()->user(), $description));
+                        return ResponseHelper::formatResponse(true, 200, new UserResource(auth()->user(), $descriptions));
                     }
                     return ResponseHelper::unAuthorize();
                 break;
