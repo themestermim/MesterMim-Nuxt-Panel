@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Experience;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+//use Illuminate\Support\Carbon;
 
 class ExperiencesController extends Controller
 {
@@ -15,6 +16,7 @@ class ExperiencesController extends Controller
 
         // دریافت زبان از هدر و تنظیم 'fa' به عنوان مقدار پیش‌فرض
         $lang = $request->headers->get('lang');
+//        dd($lang);
 
         if (!$lang) {
             return response()->json(ResponseHelper::response422(['message' => 'lang is required.']), 422);
@@ -62,6 +64,9 @@ class ExperiencesController extends Controller
         foreach ($validated['experiences'] as $experienceData) {
             $uniqueTypeId = uniqid();
 
+//            $arrivalDate = Carbon::createFromFormat('Y/m/d', $experienceData['arrival_date'])->format('Y-m-d');
+//            $exitDate = Carbon::createFromFormat('Y/m/d', $experienceData['exit_date'])->format('Y-m-d');
+
 
             $experienceFa = new Experience([
                 'type_id' => $uniqueTypeId,
@@ -81,7 +86,7 @@ class ExperiencesController extends Controller
             $experienceFa->save();
 
             $experienceEn = new Experience([
-                'type_id' => $uniqueTypeId, // همان شناسه برای زبان انگلیسی
+                'type_id' => $uniqueTypeId,
                 'company_name' => $experienceData['enCompanyName'],
                 'arrival_date' => $experienceData['arrival_date'],
                 'exit_date' => $experienceData['exit_date'] ?? null,
@@ -90,7 +95,7 @@ class ExperiencesController extends Controller
             ]);
 
             if (isset($experienceData['image'])) {
-                $experienceEn->image = $imagePath; // همان مسیر تصویر استفاده شده
+                $experienceEn->image = $imagePath;
             }
 
             $experienceEn->save();
@@ -101,9 +106,9 @@ class ExperiencesController extends Controller
         ], 200);
     }
 
+
     public function delete($id)
     {
-        dd($id);
         $experience = Experience::find($id);
 
 
